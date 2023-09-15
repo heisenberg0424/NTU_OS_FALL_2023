@@ -9,4 +9,15 @@ Please flowing the instructions below.
 sudo apt install csh git
 ```
 
-# 
+# Copy usr folder to /usr
+```
+sudo cp -r usr /usr
+```
+
+# Go to code folder and make
+```
+cd nachos-4.0/code
+make
+```
+
+#
