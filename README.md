@@ -11,7 +11,7 @@ sudo apt install csh git
 
 ## Clone the repo and copy usr folder to /usr
 ```
-sudo cp -r usr /usr
+sudo cp -r usr /
 ```
 
 ## Go to code folder and make
