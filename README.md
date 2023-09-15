@@ -9,7 +9,7 @@ Please flowing the instructions below.
 sudo apt install csh git
 ```
 
-## Copy usr folder to /usr
+## Clone the repo and copy usr folder to /usr
 ```
 sudo cp -r usr /usr
 ```
