@@ -1,0 +1,11 @@
+*.o
+*.coff
+nachos
+*.s
+coff2noff
+halt
+matmult
+shell
+sort
+test1
+test2
