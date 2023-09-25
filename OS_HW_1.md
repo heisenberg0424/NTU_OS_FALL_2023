@@ -38,11 +38,11 @@ AddrSpace::AddrSpace()
 {
     pageTable = new TranslationEntry[NumPhysPages];
     for (unsigned int i = 0; i < NumPhysPages; i++) {
-        pageTable[i].virtualPage = i;	
+        pageTable[i].virtualPage = i;
         //pageTable[i].physicalPage = i;
-	    pageTable[i].physicalPage = 0;
+		pageTable[i].physicalPage = 0;
         //pageTable[i].valid = TRUE;
-	    pageTable[i].valid = FALSE;
+		pageTable[i].valid = FALSE;
         pageTable[i].use = FALSE;
         pageTable[i].dirty = FALSE;
         pageTable[i].readOnly = FALSE;  
