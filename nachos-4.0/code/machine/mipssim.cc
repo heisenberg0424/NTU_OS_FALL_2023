@@ -122,18 +122,18 @@ Machine::OneInstruction(Instruction *instr)
 
     // Fetch instruction 
     if (!ReadMem(registers[PCReg], 4, &raw))
-	return;			// exception occurred
+		return;			// exception occurred
     instr->value = raw;
     instr->Decode();
 
     if (debug->IsEnabled('m')) {
         struct OpString *str = &opStrings[instr->opCode];
-	char buf[80];
+		char buf[80];
 
         ASSERT(instr->opCode <= MaxOpcode);
         cout << "At PC = " << registers[PCReg];
-	sprintf(buf, str->format, TypeToReg(str->args[0], instr),
-	     TypeToReg(str->args[1], instr), TypeToReg(str->args[2], instr));
+		sprintf(buf, str->format, TypeToReg(str->args[0], instr),
+	    TypeToReg(str->args[1], instr), TypeToReg(str->args[2], instr));
         cout << "\t" << buf << "\n";
     }
     
@@ -145,191 +145,191 @@ Machine::OneInstruction(Instruction *instr)
     // Execute the instruction (cf. Kane's book)
     switch (instr->opCode) {
 	
-      case OP_ADD:
-	sum = registers[instr->rs] + registers[instr->rt];
-	if (!((registers[instr->rs] ^ registers[instr->rt]) & SIGN_BIT) &&
-	    ((registers[instr->rs] ^ sum) & SIGN_BIT)) {
-	    RaiseException(OverflowException, 0);
-	    return;
-	}
-	registers[instr->rd] = sum;
-	break;
+    	case OP_ADD:
+			sum = registers[instr->rs] + registers[instr->rt];
+			if (!((registers[instr->rs] ^ registers[instr->rt]) & SIGN_BIT) &&
+				((registers[instr->rs] ^ sum) & SIGN_BIT)) {
+				RaiseException(OverflowException, 0);
+				return;
+			}
+			registers[instr->rd] = sum;
+			break;
 	
-      case OP_ADDI:
-	sum = registers[instr->rs] + instr->extra;
-	if (!((registers[instr->rs] ^ instr->extra) & SIGN_BIT) &&
-	    ((instr->extra ^ sum) & SIGN_BIT)) {
-	    RaiseException(OverflowException, 0);
-	    return;
-	}
-	registers[instr->rt] = sum;
-	break;
+      	case OP_ADDI:
+			sum = registers[instr->rs] + instr->extra;
+			if (!((registers[instr->rs] ^ instr->extra) & SIGN_BIT) &&
+				((instr->extra ^ sum) & SIGN_BIT)) {
+				RaiseException(OverflowException, 0);
+				return;
+			}
+			registers[instr->rt] = sum;
+			break;
 	
-      case OP_ADDIU:
-	registers[instr->rt] = registers[instr->rs] + instr->extra;
-	break;
+      	case OP_ADDIU:
+			registers[instr->rt] = registers[instr->rs] + instr->extra;
+			break;
 	
-      case OP_ADDU:
-	registers[instr->rd] = registers[instr->rs] + registers[instr->rt];
-	break;
+      	case OP_ADDU:
+			registers[instr->rd] = registers[instr->rs] + registers[instr->rt];
+			break;
 	
-      case OP_AND:
-	registers[instr->rd] = registers[instr->rs] & registers[instr->rt];
-	break;
+      	case OP_AND:
+			registers[instr->rd] = registers[instr->rs] & registers[instr->rt];
+			break;
+			
+      	case OP_ANDI:
+			registers[instr->rt] = registers[instr->rs] & (instr->extra & 0xffff);
+			break;
+			
+      	case OP_BEQ:
+			if (registers[instr->rs] == registers[instr->rt])
+				pcAfter = registers[NextPCReg] + IndexToAddr(instr->extra);
+			break;
 	
-      case OP_ANDI:
-	registers[instr->rt] = registers[instr->rs] & (instr->extra & 0xffff);
-	break;
+      	case OP_BGEZAL:
+			registers[R31] = registers[NextPCReg] + 4;
+      	case OP_BGEZ:
+			if (!(registers[instr->rs] & SIGN_BIT))
+				pcAfter = registers[NextPCReg] + IndexToAddr(instr->extra);
+			break;
 	
-      case OP_BEQ:
-	if (registers[instr->rs] == registers[instr->rt])
-	    pcAfter = registers[NextPCReg] + IndexToAddr(instr->extra);
-	break;
+      	case OP_BGTZ:
+			if (registers[instr->rs] > 0)
+				pcAfter = registers[NextPCReg] + IndexToAddr(instr->extra);
+			break;
+			
+      	case OP_BLEZ:
+			if (registers[instr->rs] <= 0)
+				pcAfter = registers[NextPCReg] + IndexToAddr(instr->extra);
+			break;
 	
-      case OP_BGEZAL:
-	registers[R31] = registers[NextPCReg] + 4;
-      case OP_BGEZ:
-	if (!(registers[instr->rs] & SIGN_BIT))
-	    pcAfter = registers[NextPCReg] + IndexToAddr(instr->extra);
-	break;
+      	case OP_BLTZAL:
+			registers[R31] = registers[NextPCReg] + 4;
+      	case OP_BLTZ:
+			if (registers[instr->rs] & SIGN_BIT)
+				pcAfter = registers[NextPCReg] + IndexToAddr(instr->extra);
+			break;
 	
-      case OP_BGTZ:
-	if (registers[instr->rs] > 0)
-	    pcAfter = registers[NextPCReg] + IndexToAddr(instr->extra);
-	break;
+      	case OP_BNE:
+			if (registers[instr->rs] != registers[instr->rt])
+				pcAfter = registers[NextPCReg] + IndexToAddr(instr->extra);
+			break;
+			
+      	case OP_DIV:
+			if (registers[instr->rt] == 0) {
+				registers[LoReg] = 0;
+				registers[HiReg] = 0;
+			} else {
+				registers[LoReg] =  registers[instr->rs] / registers[instr->rt];
+				registers[HiReg] = registers[instr->rs] % registers[instr->rt];
+			}
+			break;
 	
-      case OP_BLEZ:
-	if (registers[instr->rs] <= 0)
-	    pcAfter = registers[NextPCReg] + IndexToAddr(instr->extra);
-	break;
+      	case OP_DIVU:	  
+			rs = (unsigned int) registers[instr->rs];
+			rt = (unsigned int) registers[instr->rt];
+			if (rt == 0) {
+				registers[LoReg] = 0;
+				registers[HiReg] = 0;
+			} else {
+				tmp = rs / rt;
+				registers[LoReg] = (int) tmp;
+				tmp = rs % rt;
+				registers[HiReg] = (int) tmp;
+			}
+			break;
 	
-      case OP_BLTZAL:
-	registers[R31] = registers[NextPCReg] + 4;
-      case OP_BLTZ:
-	if (registers[instr->rs] & SIGN_BIT)
-	    pcAfter = registers[NextPCReg] + IndexToAddr(instr->extra);
-	break;
+      	case OP_JAL:
+			registers[R31] = registers[NextPCReg] + 4;
+      	case OP_J:
+			pcAfter = (pcAfter & 0xf0000000) | IndexToAddr(instr->extra);
+			break;
 	
-      case OP_BNE:
-	if (registers[instr->rs] != registers[instr->rt])
-	    pcAfter = registers[NextPCReg] + IndexToAddr(instr->extra);
-	break;
+      	case OP_JALR:
+			registers[instr->rd] = registers[NextPCReg] + 4;
+      	case OP_JR:
+			pcAfter = registers[instr->rs];
+			break;
 	
-      case OP_DIV:
-	if (registers[instr->rt] == 0) {
-	    registers[LoReg] = 0;
-	    registers[HiReg] = 0;
-	} else {
-	    registers[LoReg] =  registers[instr->rs] / registers[instr->rt];
-	    registers[HiReg] = registers[instr->rs] % registers[instr->rt];
-	}
-	break;
-	
-      case OP_DIVU:	  
-	  rs = (unsigned int) registers[instr->rs];
-	  rt = (unsigned int) registers[instr->rt];
-	  if (rt == 0) {
-	      registers[LoReg] = 0;
-	      registers[HiReg] = 0;
-	  } else {
-	      tmp = rs / rt;
-	      registers[LoReg] = (int) tmp;
-	      tmp = rs % rt;
-	      registers[HiReg] = (int) tmp;
-	  }
-	  break;
-	
-      case OP_JAL:
-	registers[R31] = registers[NextPCReg] + 4;
-      case OP_J:
-	pcAfter = (pcAfter & 0xf0000000) | IndexToAddr(instr->extra);
-	break;
-	
-      case OP_JALR:
-	registers[instr->rd] = registers[NextPCReg] + 4;
-      case OP_JR:
-	pcAfter = registers[instr->rs];
-	break;
-	
-      case OP_LB:
-      case OP_LBU:
-	tmp = registers[instr->rs] + instr->extra;
-	if (!ReadMem(tmp, 1, &value))
-	    return;
+      	case OP_LB:
+      	case OP_LBU:
+			tmp = registers[instr->rs] + instr->extra;
+			if (!ReadMem(tmp, 1, &value))
+				return;
 
-	if ((value & 0x80) && (instr->opCode == OP_LB))
-	    value |= 0xffffff00;
-	else
-	    value &= 0xff;
-	nextLoadReg = instr->rt;
-	nextLoadValue = value;
-	break;
+			if ((value & 0x80) && (instr->opCode == OP_LB))
+				value |= 0xffffff00;
+			else
+				value &= 0xff;
+			nextLoadReg = instr->rt;
+			nextLoadValue = value;
+			break;
 	
-      case OP_LH:
-      case OP_LHU:	  
-	tmp = registers[instr->rs] + instr->extra;
-	if (tmp & 0x1) {
-	    RaiseException(AddressErrorException, tmp);
-	    return;
-	}
-	if (!ReadMem(tmp, 2, &value))
-	    return;
+      	case OP_LH:
+      	case OP_LHU:	  
+			tmp = registers[instr->rs] + instr->extra;
+			if (tmp & 0x1) {
+				RaiseException(AddressErrorException, tmp);
+				return;
+			}
+			if (!ReadMem(tmp, 2, &value))
+				return;
 
-	if ((value & 0x8000) && (instr->opCode == OP_LH))
-	    value |= 0xffff0000;
-	else
-	    value &= 0xffff;
-	nextLoadReg = instr->rt;
-	nextLoadValue = value;
-	break;
+			if ((value & 0x8000) && (instr->opCode == OP_LH))
+				value |= 0xffff0000;
+			else
+				value &= 0xffff;
+			nextLoadReg = instr->rt;
+			nextLoadValue = value;
+			break;
       	
-      case OP_LUI:
-	DEBUG(dbgMach, "Executing: LUI r" << instr->rt << ", " << instr->extra);
-	registers[instr->rt] = instr->extra << 16;
-	break;
+      	case OP_LUI:
+			DEBUG(dbgMach, "Executing: LUI r" << instr->rt << ", " << instr->extra);
+			registers[instr->rt] = instr->extra << 16;
+			break;
 	
-      case OP_LW:
-	tmp = registers[instr->rs] + instr->extra;
-	if (tmp & 0x3) {
-	    RaiseException(AddressErrorException, tmp);
-	    return;
-	}
-	if (!ReadMem(tmp, 4, &value))
-	    return;
-	nextLoadReg = instr->rt;
-	nextLoadValue = value;
-	break;
+      	case OP_LW:
+			tmp = registers[instr->rs] + instr->extra;
+			if (tmp & 0x3) {
+				RaiseException(AddressErrorException, tmp);
+				return;
+			}
+			if (!ReadMem(tmp, 4, &value))
+				return;
+			nextLoadReg = instr->rt;
+			nextLoadValue = value;
+			break;
     	
-      case OP_LWL:	  
-	tmp = registers[instr->rs] + instr->extra;
+      	case OP_LWL:	  
+			tmp = registers[instr->rs] + instr->extra;
 
-	// ReadMem assumes all 4 byte requests are aligned on an even 
-	// word boundary.  Also, the little endian/big endian swap code would
-        // fail (I think) if the other cases are ever exercised.
-	ASSERT((tmp & 0x3) == 0);  
+			// ReadMem assumes all 4 byte requests are aligned on an even 
+			// word boundary.  Also, the little endian/big endian swap code would
+				// fail (I think) if the other cases are ever exercised.
+			ASSERT((tmp & 0x3) == 0);  
 
-	if (!ReadMem(tmp, 4, &value))
-	    return;
-	if (registers[LoadReg] == instr->rt)
-	    nextLoadValue = registers[LoadValueReg];
-	else
-	    nextLoadValue = registers[instr->rt];
-	switch (tmp & 0x3) {
-	  case 0:
-	    nextLoadValue = value;
-	    break;
-	  case 1:
-	    nextLoadValue = (nextLoadValue & 0xff) | (value << 8);
-	    break;
-	  case 2:
-	    nextLoadValue = (nextLoadValue & 0xffff) | (value << 16);
-	    break;
-	  case 3:
-	    nextLoadValue = (nextLoadValue & 0xffffff) | (value << 24);
-	    break;
-	}
-	nextLoadReg = instr->rt;
-	break;
+			if (!ReadMem(tmp, 4, &value))
+				return;
+			if (registers[LoadReg] == instr->rt)
+				nextLoadValue = registers[LoadValueReg];
+			else
+				nextLoadValue = registers[instr->rt];
+			switch (tmp & 0x3) {
+			case 0:
+				nextLoadValue = value;
+				break;
+			case 1:
+				nextLoadValue = (nextLoadValue & 0xff) | (value << 8);
+				break;
+			case 2:
+				nextLoadValue = (nextLoadValue & 0xffff) | (value << 16);
+				break;
+			case 3:
+				nextLoadValue = (nextLoadValue & 0xffffff) | (value << 24);
+				break;
+			}
+			nextLoadReg = instr->rt;
+			break;
       	
       case OP_LWR:
 	tmp = registers[instr->rs] + instr->extra;
