@@ -48,4 +48,27 @@ class Scheduler {
     					// by the next thread that runs
 };
 
+class SleepThreads{
+	public:
+		SleepThreads(Thread *t,int time):thread(t),finishTime(time){};
+		SleepThreads(){};
+		bool operator==(const SleepThreads &obj){ return obj.thread==thread;}
+		Thread *thread;
+		int finishTime;
+};
+
+int CompareT(SleepThreads a,SleepThreads b);
+
+class SleepList{
+	public:
+		SleepList():curr_time(0){};
+		void addToSleep(Thread *,int);
+		bool checkSleep();
+		bool isEmpty();
+		
+	private:
+		SortedList<SleepThreads> threadList{CompareT};
+		int curr_time;
+};
+
 #endif // SCHEDULER_H

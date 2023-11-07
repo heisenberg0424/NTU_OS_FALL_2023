@@ -673,8 +673,9 @@ timer.o: ../machine/timer.cc /usr/include/stdc-predef.h \
 alarm.o: ../threads/alarm.cc /usr/include/stdc-predef.h \
  ../lib/copyright.h ../threads/alarm.h ../lib/utility.h \
  ../lib/copyright.h ../machine/callback.h ../machine/timer.h \
- ../machine/callback.h ../threads/main.h ../lib/debug.h ../lib/utility.h \
- ../lib/sysdep.h /usr/include/c++/5/iostream \
+ ../machine/callback.h ../threads/scheduler.h ../lib/list.h \
+ ../lib/debug.h ../lib/utility.h ../lib/sysdep.h \
+ /usr/include/c++/5/iostream \
  /usr/include/i386-linux-gnu/c++/5/bits/c++config.h \
  /usr/include/i386-linux-gnu/c++/5/bits/os_defines.h \
  /usr/include/features.h /usr/include/i386-linux-gnu/sys/cdefs.h \
@@ -758,12 +759,12 @@ alarm.o: ../threads/alarm.cc /usr/include/stdc-predef.h \
  /usr/include/i386-linux-gnu/bits/stdlib-float.h /usr/include/libio.h \
  /usr/include/_G_config.h /usr/include/i386-linux-gnu/bits/stdio_lim.h \
  /usr/include/i386-linux-gnu/bits/sys_errlist.h /usr/include/string.h \
- ../userprog/userkernel.h ../threads/kernel.h ../threads/thread.h \
- ../lib/sysdep.h ../machine/machine.h ../machine/translate.h \
- ../userprog/addrspace.h ../filesys/filesys.h ../filesys/openfile.h \
- ../threads/scheduler.h ../lib/list.h ../lib/debug.h ../lib/list.cc \
- ../machine/interrupt.h ../machine/stats.h ../filesys/synchdisk.h \
- ../machine/disk.h ../threads/synch.h
+ ../lib/list.cc ../threads/thread.h ../lib/sysdep.h ../machine/machine.h \
+ ../machine/translate.h ../userprog/addrspace.h ../filesys/filesys.h \
+ ../filesys/openfile.h ../threads/main.h ../lib/debug.h \
+ ../userprog/userkernel.h ../threads/kernel.h ../machine/interrupt.h \
+ ../machine/stats.h ../filesys/synchdisk.h ../machine/disk.h \
+ ../threads/synch.h
 kernel.o: ../threads/kernel.cc /usr/include/stdc-predef.h \
  ../lib/copyright.h ../lib/debug.h ../lib/copyright.h ../lib/utility.h \
  ../lib/sysdep.h /usr/include/c++/5/iostream \

@@ -30,6 +30,7 @@
 #define SC_ThreadFork	9
 #define SC_ThreadYield	10
 #define SC_PrintInt	11
+#define SC_Sleep 12
 
 #ifndef IN_ASM
 
@@ -42,6 +43,9 @@
  * are then invoked in the Nachos kernel, after appropriate error checking, 
  * from the system call entry point in exception.cc.
  */
+
+/*Sleep System Call*/
+void Sleep(int time);
 
 /* Stop Nachos, and print out performance stats */
 void Halt();		

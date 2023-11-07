@@ -57,6 +57,12 @@ ExceptionHandler(ExceptionType which)
     switch (which) {
 	case SyscallException:
 	    switch(type) {
+		case SC_Sleep:
+			// cout<<"Calling SC_Sleep"<<endl;
+			val = kernel->machine->ReadRegister(4);
+			kernel->alarm->WaitUntil(val);
+			return;
+			
 		case SC_Halt:
 		    DEBUG(dbgAddr, "Shutdown, initiated by user program.\n");
    		    kernel->interrupt->Halt();

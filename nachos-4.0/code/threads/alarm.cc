@@ -51,13 +51,21 @@ Alarm::CallBack()
 {
     Interrupt *interrupt = kernel->interrupt;
     MachineStatus status = interrupt->getStatus();
+    bool running = sleeplist.checkSleep();
     
-    if (status == IdleMode) {	// is it time to quit?
+    if (!running && status == IdleMode && sleeplist.isEmpty()) {	// is it time to quit?
+        
         if (!interrupt->AnyFutureInterrupts()) {
-	    timer->Disable();	// turn off the timer
+	        timer->Disable();	// turn off the timer
 	}
     } else {			// there's someone to preempt
 	interrupt->YieldOnReturn();
     }
 }
 
+void Alarm::WaitUntil(int x){
+    IntStatus oldLevel = kernel->interrupt->SetLevel(IntOff);
+    Thread *t = kernel->currentThread;
+    sleeplist.addToSleep(t,x);
+    kernel->interrupt->SetLevel(oldLevel);
+}

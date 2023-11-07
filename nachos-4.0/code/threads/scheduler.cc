@@ -184,3 +184,34 @@ Scheduler::Print()
     cout << "Ready list contents:\n";
     readyList->Apply(ThreadPrint);
 }
+
+
+void SleepList::addToSleep(Thread *t,int time){
+    DEBUG(dbgThread, "Putting thread " << t->getName() << " to SLEEP for" << time <<" tics" );
+    threadList.Insert(SleepThreads(t,curr_time+time));
+    t->Sleep(false);
+}
+		
+bool SleepList::checkSleep(){
+    bool running=0;
+    curr_time++;
+    while(!isEmpty()&&curr_time>=threadList.Front().finishTime){
+        running = 1;
+        SleepThreads wakeup = threadList.RemoveFront();
+        kernel->scheduler->ReadyToRun(wakeup.thread);
+		DEBUG(dbgThread, "Thread woken and put to ready: " << wakeup.thread->getName());
+    }
+    return running;
+}
+
+bool SleepList::isEmpty(){
+    return threadList.IsEmpty();
+}
+
+int CompareT(SleepThreads a,SleepThreads b){
+    if(a.finishTime>b.finishTime)
+        return 1;
+    if(a.finishTime<b.finishTime)
+        return -1;
+    return 0;
+}

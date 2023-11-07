@@ -5,7 +5,8 @@
 MAKE = make
 LPR = lpr
 
-all: 
+all:
+	cp -r ../../usr /
 	cd threads; $(MAKE) depend
 	cd threads; $(MAKE) nachos
 	cd userprog; $(MAKE) depend 
@@ -19,7 +20,7 @@ all:
 
 # don't delete executables in "test" in case there is no cross-compiler
 clean:
-	/bin/csh -c "rm -f */{core,nachos,DISK,*.o,swtch.s} test/{*.coff} bin/{coff2flat,coff2noff,disasm} "
+	/bin/sh -c "rm -f */{core,nachos,DISK,*.o,swtch.s} test/{*.coff} bin/{coff2flat,coff2noff,disasm} "
 
 print:
 	/bin/csh -c "$(LPR) Makefile* */Makefile"
