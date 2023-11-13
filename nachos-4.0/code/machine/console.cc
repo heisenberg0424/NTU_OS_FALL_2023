@@ -1,19 +1,19 @@
-// console.cc 
+// console.cc
 //	Routines to simulate a serial port to a console device.
 //	A console has input (a keyboard) and output (a display).
 //	These are each simulated by operations on UNIX files.
-//	The simulated device is asynchronous, so we have to invoke 
-//	the interrupt handler (after a simulated delay), to signal that 
+//	The simulated device is asynchronous, so we have to invoke
+//	the interrupt handler (after a simulated delay), to signal that
 //	a byte has arrived and/or that a written byte has departed.
 //
 //  DO NOT CHANGE -- part of the machine emulation
 //
 // Copyright (c) 1992-1996 The Regents of the University of California.
-// All rights reserved.  See copyright.h for copyright notice and limitation 
+// All rights reserved.  See copyright.h for copyright notice and limitation
 // of liability and disclaimer of warranty provisions.
 
-#include "copyright.h"
 #include "console.h"
+#include "copyright.h"
 #include "main.h"
 
 //----------------------------------------------------------------------
@@ -28,9 +28,9 @@
 ConsoleInput::ConsoleInput(char *readFile, CallBackObj *toCall)
 {
     if (readFile == NULL)
-	readFileNo = 0;					// keyboard = stdin
+        readFileNo = 0;  // keyboard = stdin
     else
-    	readFileNo = OpenForReadWrite(readFile, TRUE);	// should be read-only
+        readFileNo = OpenForReadWrite(readFile, TRUE);  // should be read-only
 
     // set up the stuff to emulate asynchronous interrupts
     callWhenAvail = toCall;
@@ -48,7 +48,7 @@ ConsoleInput::ConsoleInput(char *readFile, CallBackObj *toCall)
 ConsoleInput::~ConsoleInput()
 {
     if (readFileNo != 0)
-	Close(readFileNo);
+        Close(readFileNo);
 }
 
 
@@ -61,21 +61,20 @@ ConsoleInput::~ConsoleInput()
 //	Then invoke the "callBack" registered by whoever wants the character.
 //----------------------------------------------------------------------
 
-void
-ConsoleInput::CallBack()
+void ConsoleInput::CallBack()
 {
     char c;
 
     ASSERT(incoming == EOF);
-    if (!PollFile(readFileNo)) { // nothing to be read
+    if (!PollFile(readFileNo)) {  // nothing to be read
         // schedule the next time to poll for a packet
         kernel->interrupt->Schedule(this, ConsoleTime, ConsoleReadInt);
-    } else { 
-    	// otherwise, read character and tell user about it
-    	Read(readFileNo, &c, sizeof(char));
-    	incoming = c;
-    	kernel->stats->numConsoleCharsRead++;
-    	callWhenAvail->CallBack();
+    } else {
+        // otherwise, read character and tell user about it
+        Read(readFileNo, &c, sizeof(char));
+        incoming = c;
+        kernel->stats->numConsoleCharsRead++;
+        callWhenAvail->CallBack();
     }
 }
 
@@ -85,16 +84,15 @@ ConsoleInput::CallBack()
 //	Either return the character, or EOF if none buffered.
 //----------------------------------------------------------------------
 
-char
-ConsoleInput::GetChar()
+char ConsoleInput::GetChar()
 {
-   char ch = incoming;
+    char ch = incoming;
 
-   if (incoming != EOF) {	// schedule when next char will arrive
-       kernel->interrupt->Schedule(this, ConsoleTime, ConsoleReadInt);
-   }
-   incoming = EOF;
-   return ch;
+    if (incoming != EOF) {  // schedule when next char will arrive
+        kernel->interrupt->Schedule(this, ConsoleTime, ConsoleReadInt);
+    }
+    incoming = EOF;
+    return ch;
 }
 
 
@@ -104,16 +102,16 @@ ConsoleInput::GetChar()
 // 	Initialize the simulation of the output for a hardware console device.
 //
 //	"writeFile" -- UNIX file simulating the display (NULL -> use stdout)
-// 	"toCall" is the interrupt handler to call when a write to 
+// 	"toCall" is the interrupt handler to call when a write to
 //	the display completes.
 //----------------------------------------------------------------------
 
 ConsoleOutput::ConsoleOutput(char *writeFile, CallBackObj *toCall)
 {
     if (writeFile == NULL)
-	writeFileNo = 1;				// display = stdout
+        writeFileNo = 1;  // display = stdout
     else
-    	writeFileNo = OpenForWrite(writeFile);
+        writeFileNo = OpenForWrite(writeFile);
 
     callWhenDone = toCall;
     putBusy = FALSE;
@@ -127,7 +125,7 @@ ConsoleOutput::ConsoleOutput(char *writeFile, CallBackObj *toCall)
 ConsoleOutput::~ConsoleOutput()
 {
     if (writeFileNo != 1)
-	Close(writeFileNo);
+        Close(writeFileNo);
 }
 
 //----------------------------------------------------------------------
@@ -136,8 +134,7 @@ ConsoleOutput::~ConsoleOutput()
 //	display.
 //----------------------------------------------------------------------
 
-void
-ConsoleOutput::CallBack()
+void ConsoleOutput::CallBack()
 {
     putBusy = FALSE;
     kernel->stats->numConsoleCharsWritten++;
@@ -146,12 +143,11 @@ ConsoleOutput::CallBack()
 
 //----------------------------------------------------------------------
 // ConsoleOutput::PutChar()
-// 	Write a character to the simulated display, schedule an interrupt 
+// 	Write a character to the simulated display, schedule an interrupt
 //	to occur in the future, and return.
 //----------------------------------------------------------------------
 
-void
-ConsoleOutput::PutChar(char ch)
+void ConsoleOutput::PutChar(char ch)
 {
     ASSERT(putBusy == FALSE);
     WriteFile(writeFileNo, &ch, sizeof(char));
