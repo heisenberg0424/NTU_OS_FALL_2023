@@ -36,6 +36,30 @@ Scheduler::Scheduler()
     toBeDestroyed = NULL;
 }
 
+Scheduler::Scheduler(SchedulerType t)
+{
+    //	schedulerType = type;
+    switch (t) {
+    case FCFS:
+        readyList = new SortedList<Thread *>(FCFScmp);
+        cout << "Using FCFS scheduler" << endl;
+        break;
+    case RR:
+        readyList = new List<Thread *>;
+        cout << "Using RR scheduler" << endl;
+        break;
+    case Priority:
+        readyList = new SortedList<Thread *>(Priorcmp);
+        cout << "Using Priority scheduler" << endl;
+        break;
+    case SJF:
+        readyList = new SortedList<Thread *>(SJFcmp);
+        cout << "Using SJF scheduler" << endl;
+        break;
+    }
+    toBeDestroyed = NULL;
+}
+
 //----------------------------------------------------------------------
 // Scheduler::~Scheduler
 // 	De-allocate the list of ready threads.
@@ -104,7 +128,7 @@ void Scheduler::Run(Thread *nextThread, bool finishing)
     Thread *oldThread = kernel->currentThread;
 
     //	cout << "Current Thread" <<oldThread->getName() << "    Next
-    //Thread"<<nextThread->getName()<<endl;
+    // Thread"<<nextThread->getName()<<endl;
 
     ASSERT(kernel->interrupt->getLevel() == IntOff);
 
@@ -210,6 +234,14 @@ bool SleepList::isEmpty()
     return threadList.IsEmpty();
 }
 
+
+/*
+ *function defined:
+ *    int Compare(T x, T y)
+ *        returns -1 if x < y
+ *        returns 0 if x == y
+ *        returns 1 if x > y
+ */
 int CompareT(SleepThreads a, SleepThreads b)
 {
     if (a.finishTime > b.finishTime)
@@ -217,4 +249,34 @@ int CompareT(SleepThreads a, SleepThreads b)
     if (a.finishTime < b.finishTime)
         return -1;
     return 0;
+}
+
+int FCFScmp(Thread *a, Thread *b)
+{
+    if (a->getJoinTime() < b->getJoinTime())
+        return -1;
+    else if ((a->getJoinTime() > b->getJoinTime()))
+        return 1;
+    else
+        return 0;
+}
+
+int Priorcmp(Thread *a, Thread *b)
+{
+    if (a->getPriority() < b->getPriority())
+        return -1;
+    else if ((a->getPriority() > b->getPriority()))
+        return 1;
+    else
+        return 0;
+}
+
+int SJFcmp(Thread *a, Thread *b)
+{
+    if (a->getBurstTime() < b->getBurstTime())
+        return -1;
+    else if ((a->getBurstTime() > b->getBurstTime()))
+        return 1;
+    else
+        return 0;
 }

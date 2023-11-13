@@ -20,14 +20,16 @@
 enum SchedulerType {
     RR,  // Round Robin
     SJF,
-    Priority
+    Priority,
+    FCFS
 };
 
 class Scheduler
 {
 public:
-    Scheduler();   // Initialize list of ready threads
-    ~Scheduler();  // De-allocate ready list
+    Scheduler();
+    Scheduler(SchedulerType);  // Initialize list of ready threads
+    ~Scheduler();              // De-allocate ready list
 
     void ReadyToRun(Thread *thread);
     // Thread can be dispatched.
@@ -73,5 +75,13 @@ private:
     SortedList<SleepThreads> threadList{CompareT};
     int curr_time;
 };
+
+/*
+ * Compare functions for sorted list:
+ */
+
+int FCFScmp(Thread *a, Thread *b);
+int Priorcmp(Thread *a, Thread *b);
+int SJFcmp(Thread *a, Thread *b);
 
 #endif  // SCHEDULER_H

@@ -37,6 +37,7 @@ public:
     // a class makes it easier to support multiple kernels, when we
     // get to the networking assignment.
 
+    SchedulerType type;
     Thread *currentThread;  // the thread holding the CPU
     Scheduler *scheduler;   // the ready list
     Interrupt *interrupt;   // interrupt status

@@ -25,6 +25,8 @@
 ThreadedKernel::ThreadedKernel(int argc, char **argv)
 {
     randomSlice = FALSE;
+    type = FCFS;
+
     for (int i = 1; i < argc; i++) {
         if (strcmp(argv[i], "-rs") == 0) {
             ASSERT(i + 1 < argc);
@@ -34,6 +36,18 @@ ThreadedKernel::ThreadedKernel(int argc, char **argv)
             i++;
         } else if (strcmp(argv[i], "-u") == 0) {
             cout << "Partial usage: nachos [-rs randomSeed]\n";
+        } else if (strcmp(argv[i], "-scheduler") == 0) {
+            i++;
+            if (strcmp(argv[i], "RR") == 0)
+                type = RR;
+            else if (strcmp(argv[i], "FCFS") == 0)
+                type = FCFS;
+            else if (strcmp(argv[i], "Priority") == 0)
+                type = Priority;
+            else if (strcmp(argv[i], "SJF") == 0)
+                type = SJF;
+            else
+                cout << "Invalid scheduler" << endl;
         }
     }
 }
@@ -49,7 +63,7 @@ void ThreadedKernel::Initialize()
 {
     stats = new Statistics();        // collect statistics
     interrupt = new Interrupt;       // start up interrupt handling
-    scheduler = new Scheduler();     // initialize the ready queue
+    scheduler = new Scheduler(type);     // initialize the ready queue
     alarm = new Alarm(randomSlice);  // start up time slicing
 
     // We didn't explicitly allocate the current thread we are running in.

@@ -410,13 +410,16 @@ void Thread::RestoreUserState()
 //	purposes.
 //----------------------------------------------------------------------
 
-static void SimpleThread(int which)
-{
-    int num;
+static void SimpleThread()
 
-    for (num = 0; num < 5; num++) {
-        cout << "*** thread " << which << " looped " << num << " times\n";
-        kernel->currentThread->Yield();
+{
+    Thread *curr_thread = kernel->currentThread;
+
+    while (curr_thread->getBurstTime() > 0) {
+        curr_thread->setBurstTime(curr_thread->getBurstTime() - 1);
+        cout << "Running Thread: " << curr_thread->getName()
+             << ", Time Left: " << curr_thread->getBurstTime() << endl;
+        kernel->interrupt->OneTick();
     }
 }
 
@@ -427,11 +430,24 @@ static void SimpleThread(int which)
 //----------------------------------------------------------------------
 
 void Thread::SelfTest()
+
 {
     DEBUG(dbgThread, "Entering Thread::SelfTest");
+    Thread *t;
+    int threadNum = 5;
+    char *name[threadNum] = {"A", "B", "C", "D", "E"};
+    int joinTime[threadNum] = {1, 2, 3, 4, 5};
+    int burstTime[threadNum] = {15, 20, 25, 10, 5};
+    int priority[threadNum] = {5, 4, 3, 2, 1};
 
-    Thread *t = new Thread("forked thread");
+    for (int i = 0; i < threadNum; i++) {
+        t = new Thread(name[i]);
+        t->setJoinTime(joinTime[i]);
+        t->setBurstTime(burstTime[i]);
+        t->setPriority(priority[i]);
+        t->Fork((VoidFunctionPtr) SimpleThread, NULL);
+    }
 
-    t->Fork((VoidFunctionPtr) SimpleThread, (void *) 1);
-    SimpleThread(0);
+    kernel->currentThread->Yield();
 }
+
