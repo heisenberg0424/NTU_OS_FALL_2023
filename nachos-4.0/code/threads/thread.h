@@ -107,10 +107,15 @@ public:
     char *getName() { return (name); }
     void Print() { cout << name; }
     void SelfTest();  // test whether thread impl is working
+    int getPriority() { return priority; }
+    int getBurstTime() { return burstTime; }
+    void setPriority(int pri) { priority = pri; }
+    void setBurstTIme(int time) { burstTime = time; }
 
 private:
     // some of the private data for this class is listed above
-
+    int priority;
+    int burstTime;
     int *stack;  // Bottom of the stack
                  // NULL if this is the main thread
                  // (If NULL, don't deallocate stack)

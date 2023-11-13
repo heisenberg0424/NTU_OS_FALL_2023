@@ -16,6 +16,7 @@
 #include <string.h>
 #include "copyright.h"
 #include "filesys.h"
+#include "machine.h"
 
 #define UserStackSize 1024  // increase this as necessary!
 

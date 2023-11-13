@@ -162,7 +162,7 @@ void Thread::Begin()
 //	or the execution stack, because we're still running in the thread
 //	and we're still on the stack!  Instead, we tell the scheduler
 //	to call the destructor, once it is running in the context of a different
-//thread.
+// thread.
 //
 // 	NOTE: we disable interrupts, because Sleep() assumes interrupts
 //	are disabled.
@@ -410,13 +410,13 @@ void Thread::RestoreUserState()
 //	purposes.
 //----------------------------------------------------------------------
 
-static void SimpleThread(int which)
+static void SimpleThread()
 {
-    int num;
-
-    for (num = 0; num < 5; num++) {
-        cout << "*** thread " << which << " looped " << num << " times\n";
-        kernel->currentThread->Yield();
+    Thread *curr_thread = kernel->currentThread;
+    while( curr_thread->getBurstTime() > 0 ) {
+        curr_thread->setBurstTIme(curr_thread->getBurstTime() - 1);
+        cout<<"Running Thread: "<<curr_thread->getName()<<", Time Left: "<<curr_thread->getBurstTime()<<endl;
+        kernel->interrupt->OneTick();
     }
 }
 
@@ -430,8 +430,17 @@ void Thread::SelfTest()
 {
     DEBUG(dbgThread, "Entering Thread::SelfTest");
 
-    Thread *t = new Thread("forked thread");
+    Thread *t ;
+    int threadNum = 5;
+    char *name[threadNum] = {"A", "B", "C", "D", "E"};
+    int burstTime[threadNum] = {1, 2, 3, 4, 5};
+    int priority[threadNum] = {1, 2, 3, 4, 5};
 
-    t->Fork((VoidFunctionPtr) SimpleThread, (void *) 1);
-    SimpleThread(0);
+    for (int i = 0; i < threadNum; i++) {
+        t = new Thread(name[i]);
+        t->setBurstTIme(burstTime[i]);
+        t->setPriority(priority[i]);
+        t->Fork((VoidFunctionPtr) SimpleThread, NULL);
+    }
+    kernel->currentThread->Yield();
 }

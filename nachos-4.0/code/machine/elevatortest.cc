@@ -26,7 +26,7 @@ public:
                             // by acting like a rider
     void ControllerTest();  // test out elevator simulation, by
                             // acting like an elevator controller
-    void CallBack();  // get notification of event
+    void CallBack();        // get notification of event
 
 private:
     ElevatorBank *elevators;

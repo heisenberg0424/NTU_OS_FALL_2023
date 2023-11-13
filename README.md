@@ -15,7 +15,7 @@ docker build . -t ubuntu32
 
 ## Run the container
 ```
-docker run --rm -ti -v /YourPath/ToNachos:/home 32test /bin/zsh
+docker run --rm -ti -v /YourPath/ToNachos:/home ubuntu32 /bin/zsh
 ```
 
 ## Go to code folder and make
