@@ -1,15 +1,15 @@
-// stats.h
+// stats.h 
 //	Routines for managing statistics about Nachos performance.
 //
 // DO NOT CHANGE -- these stats are maintained by the machine emulation.
 //
 // Copyright (c) 1992-1996 The Regents of the University of California.
-// All rights reserved.  See copyright.h for copyright notice and limitation
+// All rights reserved.  See copyright.h for copyright notice and limitation 
 // of liability and disclaimer of warranty provisions.
 
-#include "stats.h"
 #include "copyright.h"
 #include "debug.h"
+#include "stats.h"
 
 //----------------------------------------------------------------------
 // Statistics::Statistics
@@ -30,15 +30,16 @@ Statistics::Statistics()
 //	at system shutdown.
 //----------------------------------------------------------------------
 
-void Statistics::Print()
+void
+Statistics::Print()
 {
     cout << "Ticks: total " << totalTicks << ", idle " << idleTicks;
-    cout << ", system " << systemTicks << ", user " << userTicks << "\n";
+		cout << ", system " << systemTicks << ", user " << userTicks <<"\n";
     cout << "Disk I/O: reads " << numDiskReads;
-    cout << ", writes " << numDiskWrites << "\n";
-    cout << "Console I/O: reads " << numConsoleCharsRead;
+		cout << ", writes " << numDiskWrites << "\n";
+		cout << "Console I/O: reads " << numConsoleCharsRead;
     cout << ", writes " << numConsoleCharsWritten << "\n";
     cout << "Paging: faults " << numPageFaults << "\n";
     cout << "Network I/O: packets received " << numPacketsRecvd;
-    cout << ", sent " << numPacketsSent << "\n";
+		cout << ", sent " << numPacketsSent << "\n";
 }

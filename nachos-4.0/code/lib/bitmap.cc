@@ -3,12 +3,12 @@
 //	can be either on or off.  Represented as an array of integers.
 //
 // Copyright (c) 1992-1996 The Regents of the University of California.
-// All rights reserved.  See copyright.h for copyright notice and limitation
+// All rights reserved.  See copyright.h for copyright notice and limitation 
 // of liability and disclaimer of warranty provisions.
 
-#include "bitmap.h"
 #include "copyright.h"
 #include "debug.h"
+#include "bitmap.h"
 
 //----------------------------------------------------------------------
 // BitMap::BitMap
@@ -18,8 +18,8 @@
 //	"numItems" is the number of bits in the bitmap.
 //----------------------------------------------------------------------
 
-BitMap::BitMap(int numItems)
-{
+BitMap::BitMap(int numItems) 
+{ 
     int i;
 
     ASSERT(numItems > 0);
@@ -28,7 +28,7 @@ BitMap::BitMap(int numItems)
     numWords = divRoundUp(numBits, BitsInWord);
     map = new unsigned int[numWords];
     for (i = 0; i < numWords; i++) {
-        map[i] = 0;  // initialize map to keep Purify happy
+	map[i] = 0;		// initialize map to keep Purify happy
     }
     for (i = 0; i < numBits; i++) {
         Clear(i);
@@ -41,7 +41,7 @@ BitMap::BitMap(int numItems)
 //----------------------------------------------------------------------
 
 BitMap::~BitMap()
-{
+{ 
     delete map;
 }
 
@@ -52,15 +52,16 @@ BitMap::~BitMap()
 //	"which" is the number of the bit to be set.
 //----------------------------------------------------------------------
 
-void BitMap::Mark(int which)
-{
+void
+BitMap::Mark(int which) 
+{ 
     ASSERT(which >= 0 && which < numBits);
 
     map[which / BitsInWord] |= 1 << (which % BitsInWord);
 
     ASSERT(Test(which));
 }
-
+    
 //----------------------------------------------------------------------
 // BitMap::Clear
 // 	Clear the "nth" bit in a bitmap.
@@ -68,7 +69,8 @@ void BitMap::Mark(int which)
 //	"which" is the number of the bit to be cleared.
 //----------------------------------------------------------------------
 
-void BitMap::Clear(int which)
+void 
+BitMap::Clear(int which) 
 {
     ASSERT(which >= 0 && which < numBits);
 
@@ -84,14 +86,15 @@ void BitMap::Clear(int which)
 //	"which" is the number of the bit to be tested.
 //----------------------------------------------------------------------
 
-bool BitMap::Test(int which) const
+bool 
+BitMap::Test(int which) const
 {
     ASSERT(which >= 0 && which < numBits);
-
+    
     if (map[which / BitsInWord] & (1 << (which % BitsInWord))) {
-        return TRUE;
+	return TRUE;
     } else {
-        return FALSE;
+	return FALSE;
     }
 }
 
@@ -104,13 +107,14 @@ bool BitMap::Test(int which) const
 //	If no bits are clear, return -1.
 //----------------------------------------------------------------------
 
-int BitMap::FindAndSet()
+int 
+BitMap::FindAndSet() 
 {
     for (int i = 0; i < numBits; i++) {
-        if (!Test(i)) {
-            Mark(i);
-            return i;
-        }
+	if (!Test(i)) {
+	    Mark(i);
+	    return i;
+	}
     }
     return -1;
 }
@@ -121,14 +125,15 @@ int BitMap::FindAndSet()
 //	(In other words, how many bits are unallocated?)
 //----------------------------------------------------------------------
 
-int BitMap::NumClear() const
+int 
+BitMap::NumClear() const
 {
     int count = 0;
 
     for (int i = 0; i < numBits; i++) {
-        if (!Test(i)) {
-            count++;
-        }
+	if (!Test(i)) {
+	    count++;
+	}
     }
     return count;
 }
@@ -141,15 +146,16 @@ int BitMap::NumClear() const
 //	all the bits that are set in the bitmap.
 //----------------------------------------------------------------------
 
-void BitMap::Print() const
+void
+BitMap::Print() const
 {
-    cout << "BitMap set:\n";
+    cout << "BitMap set:\n"; 
     for (int i = 0; i < numBits; i++) {
-        if (Test(i)) {
-            cout << i << ", ";
-        }
+	if (Test(i)) {
+	    cout << i << ", ";
+	}
     }
-    cout << "\n";
+    cout << "\n"; 
 }
 
 
@@ -158,13 +164,14 @@ void BitMap::Print() const
 // 	Test whether this module is working.
 //----------------------------------------------------------------------
 
-void BitMap::SelfTest()
+void
+BitMap::SelfTest() 
 {
     int i;
+    
+    ASSERT(numBits >= BitsInWord);	// bitmap must be big enough
 
-    ASSERT(numBits >= BitsInWord);  // bitmap must be big enough
-
-    ASSERT(NumClear() == numBits);  // bitmap must be empty
+    ASSERT(NumClear() == numBits);	// bitmap must be empty
     ASSERT(FindAndSet() == 0);
     Mark(31);
     ASSERT(Test(0) && Test(31));
@@ -177,7 +184,7 @@ void BitMap::SelfTest()
     for (i = 0; i < numBits; i++) {
         Mark(i);
     }
-    ASSERT(FindAndSet() == -1);  // bitmap should be full!
+    ASSERT(FindAndSet() == -1);		// bitmap should be full!
     for (i = 0; i < numBits; i++) {
         Clear(i);
     }

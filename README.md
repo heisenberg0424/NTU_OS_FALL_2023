@@ -1,32 +1,23 @@
 # Nachos
 
-This project was build successfully in docker, ubuntu 16.04 32bit.  
+This project was build successfully in VirtualBox 7.0, ubuntu 16.04 32bit.  
 Please flowing the instructions below.
 
-## Clone the repo to your directory
+
+## Dependancy install
 ```
-git clone https://github.com/heisenberg0424/NTU_OS_FALL_2023.git
+sudo apt install csh git
 ```
 
-## Build the container from Dockerfile
+## Clone the repo and copy usr folder to /usr
 ```
-docker build . -t ubuntu32
-```
-
-## Run the container
-```
-docker run --rm -ti -v /YourPath/ToNachos:/home ubuntu32 /bin/zsh
+sudo cp -r usr /
 ```
 
 ## Go to code folder and make
 ```
-cd /home/nachos-4.0/code
+cd nachos-4.0/code
 make
-```
-## Format the ugly code
-```
-clang-format -style=file -i nachos-4.0/code/*/*.cc
-clang-format -style=file -i nachos-4.0/code/*/*.h
 ```
 
 ## Check if you are success
