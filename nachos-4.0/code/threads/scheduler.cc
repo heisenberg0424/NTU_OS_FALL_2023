@@ -265,7 +265,7 @@ int Priorcmp(Thread *a, Thread *b)
 {
     if (a->getPriority() < b->getPriority())
         return -1;
-    else if ((a->getPriority() > b->getPriority()))
+    else if (a->getPriority() > b->getPriority())
         return 1;
     else
         return 0;
@@ -275,7 +275,7 @@ int SJFcmp(Thread *a, Thread *b)
 {
     if (a->getBurstTime() < b->getBurstTime())
         return -1;
-    else if ((a->getBurstTime() > b->getBurstTime()))
+    else if (a->getBurstTime() > b->getBurstTime())
         return 1;
     else
         return 0;

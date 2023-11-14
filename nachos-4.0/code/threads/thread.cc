@@ -208,6 +208,8 @@ void Thread::Yield()
     DEBUG(dbgThread, "Yielding thread: " << name);
 
     nextThread = kernel->scheduler->FindNextToRun();
+    DEBUG(dbgThread, "FindNextToRun: " << nextThread->getName());
+
     if (nextThread != NULL) {
         kernel->scheduler->ReadyToRun(this);
         kernel->scheduler->Run(nextThread, FALSE);
@@ -411,7 +413,6 @@ void Thread::RestoreUserState()
 //----------------------------------------------------------------------
 
 static void SimpleThread()
-
 {
     Thread *curr_thread = kernel->currentThread;
 
@@ -430,7 +431,6 @@ static void SimpleThread()
 //----------------------------------------------------------------------
 
 void Thread::SelfTest()
-
 {
     DEBUG(dbgThread, "Entering Thread::SelfTest");
     Thread *t;
