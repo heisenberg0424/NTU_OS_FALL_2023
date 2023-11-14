@@ -1,7 +1,8 @@
 # Nachos
 
 This project was build successfully in docker, ubuntu 16.04 32bit.  
-Please flowing the instructions below.
+Please flowing the instructions below.  
+The report for each homework will be in the [Report](https://github.com/heisenberg0424/NTU_OS_FALL_2023/tree/main/Report) folder.
 
 ## Clone the repo to your directory
 ```
