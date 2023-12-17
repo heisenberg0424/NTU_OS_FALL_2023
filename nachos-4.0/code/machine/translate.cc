@@ -141,8 +141,7 @@ bool Machine::WriteMem(int addr, int size, int value)
     ExceptionType exception;
     int physicalAddress;
 
-    DEBUG(dbgAddr,
-          "Writing VA " << addr << ", size " << size << ", value " << value);
+    DEBUG(dbgAddr, "Writing VA " << addr << ", size " << size << ", value " << value);
 
     exception = Translate(addr, &physicalAddress, size, TRUE);
     if (exception != NoException) {
@@ -155,13 +154,11 @@ bool Machine::WriteMem(int addr, int size, int value)
         break;
 
     case 2:
-        *(unsigned short *) &mainMemory[physicalAddress] =
-            ShortToMachine((unsigned short) (value & 0xffff));
+        *(unsigned short *) &mainMemory[physicalAddress] = ShortToMachine((unsigned short) (value & 0xffff));
         break;
 
     case 4:
-        *(unsigned int *) &mainMemory[physicalAddress] =
-            WordToMachine((unsigned int) value);
+        *(unsigned int *) &mainMemory[physicalAddress] = WordToMachine((unsigned int) value);
         break;
 
     default:
@@ -186,24 +183,18 @@ bool Machine::WriteMem(int addr, int size, int value)
 // 	"writing" -- if TRUE, check the "read-only" bit in the TLB
 //----------------------------------------------------------------------
 
-ExceptionType Machine::Translate(int virtAddr,
-                                 int *physAddr,
-                                 int size,
-                                 bool writing)
+ExceptionType Machine::Translate(int virtAddr, int *physAddr, int size, bool writing)
 {
     int i;
     unsigned int vpn, offset;
     TranslationEntry *entry;
     unsigned int pageFrame;
 
-    DEBUG(dbgAddr,
-          "\tTranslate " << virtAddr << (writing ? " , write" : " , read"));
+    DEBUG(dbgAddr, "\tTranslate " << virtAddr << (writing ? " , write" : " , read"));
 
     // check for alignment errors
-    if (((size == 4) && (virtAddr & 0x3)) ||
-        ((size == 2) && (virtAddr & 0x1))) {
-        DEBUG(dbgAddr,
-              "Alignment problem at " << virtAddr << ", size " << size);
+    if (((size == 4) && (virtAddr & 0x3)) || ((size == 2) && (virtAddr & 0x1))) {
+        DEBUG(dbgAddr, "Alignment problem at " << virtAddr << ", size " << size);
         return AddressErrorException;
     }
 
@@ -224,6 +215,7 @@ ExceptionType Machine::Translate(int virtAddr,
             DEBUG(dbgAddr, "Invalid virtual page # " << virtAddr);
             return PageFaultException;
         }
+        pageTable[vpn].cnt++;
         entry = &pageTable[vpn];
     } else {
         for (entry = NULL, i = 0; i < TLBSize; i++) {

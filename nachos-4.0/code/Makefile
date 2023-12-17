@@ -35,4 +35,4 @@ print:
 	/bin/csh -c "$(LPR) test/*.h test/*.c test/*.s"
 
 test:
-	/bin/zsh -c "threads/nachos -scheduler SJF"
+	/bin/zsh -c "userprog/nachos -e test/matmult -d a"

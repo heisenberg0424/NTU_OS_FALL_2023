@@ -17,8 +17,7 @@
 //	for the initialization (see also comments in main.cc)
 //----------------------------------------------------------------------
 
-UserProgKernel::UserProgKernel(int argc, char **argv)
-    : ThreadedKernel(argc, argv)
+UserProgKernel::UserProgKernel(int argc, char **argv) : ThreadedKernel(argc, argv)
 {
     debugUserProg = FALSE;
     execfileNum = 0;
@@ -44,8 +43,7 @@ UserProgKernel::UserProgKernel(int argc, char **argv)
             cout << "	./nachos -s : Print machine status during the machine "
                     "is on."
                  << endl;
-            cout << "	./nachos -e file1 -e file2 : executing file1 and file2."
-                 << endl;
+            cout << "	./nachos -e file1 -e file2 : executing file1 and file2." << endl;
         }
     }
 }
@@ -61,6 +59,7 @@ void UserProgKernel::Initialize()
 
     machine = new Machine(debugUserProg);
     fileSystem = new FileSystem();
+    virtualMem = new SynchDisk("Virtual Memory");
 #ifdef FILESYS
     synchDisk = new SynchDisk("New SynchDisk");
 #endif  // FILESYS
@@ -76,6 +75,7 @@ UserProgKernel::~UserProgKernel()
 {
     delete fileSystem;
     delete machine;
+    delete virtualMem;
 #ifdef FILESYS
     delete synchDisk;
 #endif

@@ -24,6 +24,7 @@
 #include "copyright.h"
 #include "main.h"
 #include "syscall.h"
+#include "machine.h"
 
 //----------------------------------------------------------------------
 // ExceptionHandler
@@ -51,9 +52,51 @@
 void ExceptionHandler(ExceptionType which)
 {
     int type = kernel->machine->ReadRegister(2);
-    int val;
+    int val, vaddr, vpn, target, min;
+    char *buf1;
+    char *buf2;
 
     switch (which) {
+    case PageFaultException:
+        kernel->stats->numPageFaults++;
+        vaddr = kernel->machine->ReadRegister(39);
+        vpn = vaddr / PageSize;
+
+        // FCFS
+        target = kernel->machine->fifo;
+        kernel->machine->fifo = (kernel->machine->fifo + 1) % NumPhysPages;
+
+        // LRU
+        target = 0;
+        min = kernel->machine->phy2virPage[target]->cnt;
+        for (int i = 1; i < NumPhysPages; i++) {
+            cout << i << ": " << kernel->machine->phy2virPage[i]->cnt << ", ";
+            if (kernel->machine->phy2virPage[i]->cnt < min) {
+                min = kernel->machine->phy2virPage[i]->cnt;
+                target = i;
+            }
+        }
+        cout << endl << "Pick: " << target << endl;
+
+        // Swap Memory and Disk
+        buf1 = new char[PageSize];
+        buf2 = new char[PageSize];
+        memcpy(buf1, &kernel->machine->mainMemory[target * PageSize], PageSize);
+        kernel->virtualMem->ReadSector(kernel->machine->pageTable[vpn].sector, buf2);
+        memcpy(&kernel->machine->mainMemory[target * PageSize], buf2, PageSize);
+        kernel->virtualMem->WriteSector(kernel->machine->pageTable[vpn].sector, buf1);
+
+        kernel->machine->phy2virPage[target]->sector = kernel->machine->pageTable[vpn].sector;
+        kernel->machine->phy2virPage[target]->valid = FALSE;
+
+        kernel->machine->pageTable[vpn].valid = TRUE;
+        kernel->machine->pageTable[vpn].physicalPage = target;
+        kernel->machine->phy2virPage[target] = &kernel->machine->pageTable[vpn];
+
+        delete[] buf1;
+        delete[] buf2;
+
+        return;
     case SyscallException:
         switch (type) {
         case SC_Sleep:
@@ -91,7 +134,7 @@ void ExceptionHandler(ExceptionType which)
         }
         break;
     default:
-        cerr << "Unexpected user mode exception" << which << "\n";
+        cerr << "Unexpected user mode exception " << which << "\n";
         break;
     }
     ASSERTNOTREACHED();

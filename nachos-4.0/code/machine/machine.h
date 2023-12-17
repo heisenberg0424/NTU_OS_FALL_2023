@@ -91,7 +91,7 @@ class Machine
 public:
     Machine(bool debug);  // Initialize the simulation of the hardware
                           // for running user programs
-    ~Machine();  // De-allocate the data structures
+    ~Machine();           // De-allocate the data structures
 
     // Routines callable by the Nachos kernel
     void Run();  // Run a user program
@@ -136,6 +136,12 @@ public:
     unsigned int pageTableSize;
     bool ReadMem(int addr, int size, int *value);
 
+    // Tracks the virtual page that uses physical page
+    TranslationEntry *phy2virPage[NumPhysPages];
+    // See if Disk sector is used
+    bool sectorIsUsed[1024];  // 1024 = NumSector
+    int fifo;
+
 private:
     // Routines internal to the machine simulation -- DO NOT call these directly
     void DelayedLoad(int nextReg, int nextVal);
@@ -150,10 +156,7 @@ private:
     // memory (at addr).  Return FALSE if a
     // correct translation couldn't be found.
 
-    ExceptionType Translate(int virtAddr,
-                            int *physAddr,
-                            int size,
-                            bool writing);
+    ExceptionType Translate(int virtAddr, int *physAddr, int size, bool writing);
     // Translate an address, and check for
     // alignment.  Set the use and dirty bits in
     // the translation entry appropriately,
@@ -172,8 +175,8 @@ private:
 
     int registers[NumTotalRegs];  // CPU registers, for executing user programs
 
-    bool singleStep;  // drop back into the debugger after each
-                      // simulated instruction
+    bool singleStep;   // drop back into the debugger after each
+                       // simulated instruction
     int runUntilTime;  // drop back into the debugger when simulated
                        // time reaches this value
 

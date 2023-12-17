@@ -227,9 +227,7 @@ int Disk::ComputeLatency(int newSector, bool writing)
 
 #ifndef NOTRACKBUF  // turn this on if you don't want the track buffer stuff
     // check if track buffer applies
-    if ((writing == FALSE) && (seek == 0) &&
-        (((timeAfter - bufferInit) / RotationTime) >
-         ModuloDiff(newSector, bufferInit / RotationTime))) {
+    if ((writing == FALSE) && (seek == 0) && (((timeAfter - bufferInit) / RotationTime) > ModuloDiff(newSector, bufferInit / RotationTime))) {
         DEBUG(dbgDisk, "Request latency = " << RotationTime);
         return RotationTime;  // time to transfer sector from the track buffer
     }
@@ -255,6 +253,5 @@ void Disk::UpdateLast(int newSector)
     if (seek != 0)
         bufferInit = kernel->stats->totalTicks + seek + rotate;
     lastSector = newSector;
-    DEBUG(dbgDisk,
-          "Updating last sector = " << lastSector << " , " << bufferInit);
+    DEBUG(dbgDisk, "Updating last sector = " << lastSector << " , " << bufferInit);
 }

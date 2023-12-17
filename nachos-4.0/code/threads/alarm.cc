@@ -52,8 +52,7 @@ void Alarm::CallBack()
     MachineStatus status = interrupt->getStatus();
     bool running = sleeplist.checkSleep();
 
-    if (!running && status == IdleMode &&
-        sleeplist.isEmpty()) {  // is it time to quit?
+    if (!running && status == IdleMode && sleeplist.isEmpty()) {  // is it time to quit?
 
         if (!interrupt->AnyFutureInterrupts()) {
             timer->Disable();  // turn off the timer

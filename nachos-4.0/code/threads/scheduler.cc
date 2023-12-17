@@ -150,8 +150,7 @@ void Scheduler::Run(Thread *nextThread, bool finishing)
     kernel->currentThread = nextThread;  // switch to the next thread
     nextThread->setStatus(RUNNING);      // nextThread is now running
 
-    DEBUG(dbgThread, "Switching from: " << oldThread->getName()
-                                        << " to: " << nextThread->getName());
+    DEBUG(dbgThread, "Switching from: " << oldThread->getName() << " to: " << nextThread->getName());
 
     // This is a machine-dependent assembly language routine defined
     // in switch.s.  You may have to think
@@ -209,8 +208,7 @@ void Scheduler::Print()
 
 void SleepList::addToSleep(Thread *t, int time)
 {
-    DEBUG(dbgThread, "Putting thread " << t->getName() << " to SLEEP for"
-                                       << time << " tics");
+    DEBUG(dbgThread, "Putting thread " << t->getName() << " to SLEEP for" << time << " tics");
     threadList.Insert(SleepThreads(t, curr_time + time));
     t->Sleep(false);
 }
@@ -223,8 +221,7 @@ bool SleepList::checkSleep()
         running = 1;
         SleepThreads wakeup = threadList.RemoveFront();
         kernel->scheduler->ReadyToRun(wakeup.thread);
-        DEBUG(dbgThread,
-              "Thread woken and put to ready: " << wakeup.thread->getName());
+        DEBUG(dbgThread, "Thread woken and put to ready: " << wakeup.thread->getName());
     }
     return running;
 }
