@@ -70,13 +70,11 @@ void ExceptionHandler(ExceptionType which)
         target = 0;
         min = kernel->machine->phy2virPage[target]->cnt;
         for (int i = 1; i < NumPhysPages; i++) {
-            cout << i << ": " << kernel->machine->phy2virPage[i]->cnt << ", ";
             if (kernel->machine->phy2virPage[i]->cnt < min) {
                 min = kernel->machine->phy2virPage[i]->cnt;
                 target = i;
             }
         }
-        cout << endl << "Pick: " << target << endl;
 
         // Swap Memory and Disk
         buf1 = new char[PageSize];

@@ -9,6 +9,8 @@ RUN apt-get update && apt-get install -y \
 	git \
 	zsh \
 	gdb \
+	csh \
+	clang-format \
 	wget 
 
 RUN sh -c "$(wget -O- https://github.com/deluan/zsh-in-docker/releases/download/v1.1.5/zsh-in-docker.sh)"

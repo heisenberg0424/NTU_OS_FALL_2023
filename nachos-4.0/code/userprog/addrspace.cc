@@ -123,6 +123,7 @@ bool AddrSpace::Load(char *fileName)
 
     if (noffH.code.size > 0) {
         for (unsigned int i = 0; i < numPages; i++) {  // allocate numPages Virtual pages
+            pageTable[i].cnt++;
             unsigned int j;
             for (j = 0; j < NumPhysPages; j++) {  // find unused Physical pages
                 if (!usedPhysicalPage[j]) {

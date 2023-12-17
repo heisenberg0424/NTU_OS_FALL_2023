@@ -1,5 +1,6 @@
 BasedOnStyle: Chromium
 SortIncludes: false
+ColumnLimit: 200
 Language: Cpp
 MaxEmptyLinesToKeep: 3
 IndentCaseLabels: false

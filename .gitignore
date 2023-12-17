@@ -11,3 +11,6 @@ test1
 test2
 *peda*
 *.pdf
+.gdb_history
+Virtual Memory
+log

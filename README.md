@@ -15,16 +15,30 @@ docker build . -t ubuntu32
 ```
 
 ## Run the container
+THe code will be inside `/home` in docker
 ```
-docker run --rm -ti -v /YourPath/ToNachos:/home 32test /bin/zsh
+docker run --rm -ti -v /Your/Path/To/Nachos:/home 32test /bin/zsh
 ```
 
 ## Format the ugly code
+Remember to check if `SortIncludes: false` in `.clang-format`
 ```
-sudo apt-get update
-sudo apt-get install clang-format
 clang-format -style=file -i nachos-4.0/code/*/*.cc
 clang-format -style=file -i nachos-4.0/code/*/*.h
+```
+
+## Add following line in Makefile 
+**Makefile**
+```Makefile
+MAKE = make
+LPR = lpr
+.PHONY: all test clean
+
+all:
+	cp -r ../../usr /
+	cd threads; $(MAKE) depend
+	cd threads; $(MAKE) nachos
+    ...
 ```
 
 ## Go to code folder and make
@@ -34,7 +48,7 @@ make
 ```
 
 
-## Check if you are success
+## Run Nachos
 ```
 cd userprog
 user@user-VirtualBox:~/nachos/nachos-4.0/code/userprog$ ./nachos -e ../test/test1
