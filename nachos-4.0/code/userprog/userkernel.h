@@ -17,6 +17,7 @@
 #include "machine.h"
 #include "synchdisk.h"
 class SynchDisk;
+class VirtualMemory;
 class UserProgKernel : public ThreadedKernel
 {
 public:
@@ -33,7 +34,7 @@ public:
     // These are public for notational convenience.
     Machine *machine;
     FileSystem *fileSystem;
-    SynchDisk *virtualMem;
+    VirtualMemory *virtualMemory;
 
 #ifdef FILESYS
     SynchDisk *synchDisk;
@@ -45,5 +46,23 @@ private:
     char *execfile[10];
     int execfileNum;
 };
+
+class VirtualMemory
+{
+public:
+    VirtualMemory();
+    int getVmPageNum();
+    void trackPhyPage(int phyPageNum, TranslationEntry *entry);
+    void write2Disk(int sector, char *data);
+    void swapPage(int vpn, int algo);
+
+private:
+    // Tracks the virtual page that uses physical page
+    TranslationEntry *phy2virPage[NumPhysPages];
+    SynchDisk *swap;
+    bool vmPages[1024];  // 1024 = NumSector
+    int fifo;
+};
+
 
 #endif  // USERKERNEL_H

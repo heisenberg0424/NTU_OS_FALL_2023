@@ -38,7 +38,7 @@ UserProgKernel::UserProgKernel(int argc, char **argv) : ThreadedKernel(argc, arg
                     "printed "
                  << endl;
             cout << "argument 'e' is for execting file." << endl;
-            cout << "atgument 'u' will print all argument usage." << endl;
+            cout << "argument 'u' will print all argument usage." << endl;
             cout << "For example:" << endl;
             cout << "	./nachos -s : Print machine status during the machine "
                     "is on."
@@ -59,7 +59,7 @@ void UserProgKernel::Initialize()
 
     machine = new Machine(debugUserProg);
     fileSystem = new FileSystem();
-    virtualMem = new SynchDisk("Virtual Memory");
+    virtualMemory = new VirtualMemory();
 #ifdef FILESYS
     synchDisk = new SynchDisk("New SynchDisk");
 #endif  // FILESYS
@@ -75,7 +75,7 @@ UserProgKernel::~UserProgKernel()
 {
     delete fileSystem;
     delete machine;
-    delete virtualMem;
+    delete virtualMemory;
 #ifdef FILESYS
     delete synchDisk;
 #endif
@@ -148,4 +148,65 @@ void UserProgKernel::SelfTest()
 
 
     //	cout << "This is self test message from UserProgKernel\n" ;
+}
+
+VirtualMemory::VirtualMemory()
+{
+    swap = new SynchDisk("Swap");
+    memset(vmPages, 0, 1024);
+    fifo = 0;
+}
+int VirtualMemory::getVmPageNum()
+{
+    int i;
+    for (i = 0; i < 1024; i++) {
+        if (vmPages[i] == 0) {
+            vmPages[i] = 1;
+            break;
+        }
+    }
+    return i;
+}
+void VirtualMemory::write2Disk(int sector, char *data)
+{
+    swap->WriteSector(sector, data);
+}
+void VirtualMemory::trackPhyPage(int phyPageNum, TranslationEntry *entry)
+{
+    phy2virPage[phyPageNum] = entry;
+}
+
+void VirtualMemory::swapPage(int vpn, int algo)
+{
+    int target;
+    char *buf1;
+    char *buf2;
+
+    if (algo == 0) {  // FIFO
+        target = fifo;
+        fifo = (fifo + 1) % NumPhysPages;
+    } else if (algo == 1) {  // LFU
+        target = 0;
+    }
+
+
+    // Swap Memory and Disk
+    buf1 = new char[PageSize];
+    buf2 = new char[PageSize];
+    memcpy(buf1, &kernel->machine->mainMemory[target * PageSize], PageSize);
+    swap->ReadSector(kernel->machine->pageTable[vpn].virtualPage, buf2);
+    memcpy(&kernel->machine->mainMemory[target * PageSize], buf2, PageSize);
+    swap->WriteSector(kernel->machine->pageTable[vpn].virtualPage, buf1);
+
+    phy2virPage[target]->virtualPage = kernel->machine->pageTable[vpn].virtualPage;
+    phy2virPage[target]->valid = FALSE;
+
+    kernel->machine->pageTable[vpn].valid = TRUE;
+    kernel->machine->pageTable[vpn].physicalPage = target;
+    trackPhyPage(target, &kernel->machine->pageTable[vpn]);
+
+    delete[] buf1;
+    delete[] buf2;
+
+    return;
 }

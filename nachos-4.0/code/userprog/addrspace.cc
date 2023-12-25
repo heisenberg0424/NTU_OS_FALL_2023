@@ -103,16 +103,12 @@ bool AddrSpace::Load(char *fileName)
 
 
     for (unsigned int i = 0; i < numPages; i++) {
-        pageTable[i].virtualPage = i;  // for now, virt page # = phys page #
-                                       // pageTable[i].physicalPage = i;
+        pageTable[i].virtualPage = 0;
         pageTable[i].physicalPage = 0;
-        // pageTable[i].valid = TRUE;
         pageTable[i].valid = FALSE;
         pageTable[i].use = FALSE;
         pageTable[i].dirty = FALSE;
         pageTable[i].readOnly = FALSE;
-        pageTable[i].sector = 0;
-        pageTable[i].cnt = 0;
     }
 
     size = numPages * PageSize;
@@ -123,7 +119,6 @@ bool AddrSpace::Load(char *fileName)
 
     if (noffH.code.size > 0) {
         for (unsigned int i = 0; i < numPages; i++) {  // allocate numPages Virtual pages
-            pageTable[i].cnt++;
             unsigned int j;
             for (j = 0; j < NumPhysPages; j++) {  // find unused Physical pages
                 if (!usedPhysicalPage[j]) {
@@ -136,7 +131,7 @@ bool AddrSpace::Load(char *fileName)
                 usedPhysicalPage[j] = true;
                 pageTable[i].physicalPage = j;
                 pageTable[i].valid = TRUE;
-                kernel->machine->phy2virPage[j] = &pageTable[i];  // track phy page
+                kernel->virtualMemory->trackPhyPage(j,&pageTable[i]);
 
                 executable->ReadAt(&(kernel->machine->mainMemory[j * PageSize]), PageSize, noffH.code.inFileAddr + (i * PageSize));
             } else {  // write in disk
@@ -144,19 +139,11 @@ bool AddrSpace::Load(char *fileName)
                 char *buffer;
                 buffer = new char[PageSize];
 
-                // Find empty sector
-                int sec;
-                for (sec = 0; sec < 1024; sec++) {
-                    if (kernel->machine->sectorIsUsed[sec] == 0)
-                        break;
-                }
-
+                // Find empty Virtual Page
+                pageTable[i].virtualPage = kernel->virtualMemory->getVmPageNum();
                 pageTable[i].valid = FALSE;
-                pageTable[i].sector = sec;
-                kernel->machine->sectorIsUsed[sec] = 1;
                 executable->ReadAt(buffer, PageSize, noffH.code.inFileAddr + (i * PageSize));
-                kernel->virtualMem->WriteSector(sec, buffer);
-
+                kernel->virtualMemory->write2Disk(pageTable[i].virtualPage, buffer);
                 delete[] buffer;
             }
         }

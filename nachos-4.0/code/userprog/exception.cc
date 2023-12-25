@@ -52,9 +52,7 @@
 void ExceptionHandler(ExceptionType which)
 {
     int type = kernel->machine->ReadRegister(2);
-    int val, vaddr, vpn, target, min;
-    char *buf1;
-    char *buf2;
+    int val, vaddr, vpn;
 
     switch (which) {
     case PageFaultException:
@@ -62,38 +60,8 @@ void ExceptionHandler(ExceptionType which)
         vaddr = kernel->machine->ReadRegister(39);
         vpn = vaddr / PageSize;
 
-        // FCFS
-        target = kernel->machine->fifo;
-        kernel->machine->fifo = (kernel->machine->fifo + 1) % NumPhysPages;
-
-        // LRU
-        target = 0;
-        min = kernel->machine->phy2virPage[target]->cnt;
-        for (int i = 1; i < NumPhysPages; i++) {
-            if (kernel->machine->phy2virPage[i]->cnt < min) {
-                min = kernel->machine->phy2virPage[i]->cnt;
-                target = i;
-            }
-        }
-
-        // Swap Memory and Disk
-        buf1 = new char[PageSize];
-        buf2 = new char[PageSize];
-        memcpy(buf1, &kernel->machine->mainMemory[target * PageSize], PageSize);
-        kernel->virtualMem->ReadSector(kernel->machine->pageTable[vpn].sector, buf2);
-        memcpy(&kernel->machine->mainMemory[target * PageSize], buf2, PageSize);
-        kernel->virtualMem->WriteSector(kernel->machine->pageTable[vpn].sector, buf1);
-
-        kernel->machine->phy2virPage[target]->sector = kernel->machine->pageTable[vpn].sector;
-        kernel->machine->phy2virPage[target]->valid = FALSE;
-
-        kernel->machine->pageTable[vpn].valid = TRUE;
-        kernel->machine->pageTable[vpn].physicalPage = target;
-        kernel->machine->phy2virPage[target] = &kernel->machine->pageTable[vpn];
-
-        delete[] buf1;
-        delete[] buf2;
-
+        // algo: 0:FIFO, 1:LFU, 2:LRU
+        kernel->virtualMemory->swapPage(vpn,0);
         return;
     case SyscallException:
         switch (type) {

@@ -215,7 +215,6 @@ ExceptionType Machine::Translate(int virtAddr, int *physAddr, int size, bool wri
             DEBUG(dbgAddr, "Invalid virtual page # " << virtAddr);
             return PageFaultException;
         }
-        pageTable[vpn].cnt++;
         entry = &pageTable[vpn];
     } else {
         for (entry = NULL, i = 0; i < TLBSize; i++) {

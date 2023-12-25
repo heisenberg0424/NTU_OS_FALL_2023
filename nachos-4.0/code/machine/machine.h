@@ -136,12 +136,6 @@ public:
     unsigned int pageTableSize;
     bool ReadMem(int addr, int size, int *value);
 
-    // Tracks the virtual page that uses physical page
-    TranslationEntry *phy2virPage[NumPhysPages];
-    // See if Disk sector is used
-    bool sectorIsUsed[1024];  // 1024 = NumSector
-    int fifo;
-
 private:
     // Routines internal to the machine simulation -- DO NOT call these directly
     void DelayedLoad(int nextReg, int nextVal);

@@ -50,11 +50,6 @@ static void CheckEndian()
 
 Machine::Machine(bool debug)
 {
-    // init public members
-    memset(phy2virPage, 0, NumPhysPages);
-    memset(sectorIsUsed, 0, 1024);
-    fifo = 0;
-
     int i;
 
     for (i = 0; i < NumTotalRegs; i++)

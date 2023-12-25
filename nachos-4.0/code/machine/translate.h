@@ -41,8 +41,6 @@ public:
                                 // page is referenced or modified.
     bool dirty;                 // This bit is set by the hardware every time the
                                 // page is modified.
-    unsigned int sector;        // Disk sector that virtual memory is stored
-    unsigned int cnt;           // Tracks frequency that page is used
 };
 
 #endif

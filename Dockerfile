@@ -14,4 +14,5 @@ RUN apt-get update && apt-get install -y \
 	wget 
 
 RUN sh -c "$(wget -O- https://github.com/deluan/zsh-in-docker/releases/download/v1.1.5/zsh-in-docker.sh)"
-
+RUN	git clone https://github.com/Mipu94/peda-heap.git ~/peda-heap
+RUN	echo "source ~/peda-heap/peda.py" >> ~/.gdbinit
